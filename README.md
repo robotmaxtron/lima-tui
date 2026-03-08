@@ -19,18 +19,25 @@ with features such as:
 
 ### Build from source
 ```go
-go get .      # Install dependencies
-go build .    # Build the binary
-go install .  # Install to your $GOBIN path
+go get .      // Install dependencies
+go build .    // Build the binary
+go install .  // Install to your $GOBIN path
 ```
+
+### Binary Releases
+Install latest
+```bash
+go install github.com/robotmaxtron/lima-tui@latest
+```
+
 
 ## Usage
 
 ```go
-# Run the TUI
+// Run the TUI
 go run .
 
-# Or if installed globally
+// Or if installed globally
 lima-tui
 ```
 
