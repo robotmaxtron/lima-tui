@@ -4,40 +4,40 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/rivo/tview"
 	"github.com/gdamore/tcell/v2"
+	"github.com/rivo/tview"
 )
 
 // App represents the application state
 type App struct {
-	app         *tview.Application
-	table       *tview.Table
-	statusBar   *tview.TextView
-	helpText    *tview.TextView
-	vms         []VM
-	lastUpdate  time.Time
-	showHelp    bool
-	refreshing  bool
-	lightMode   bool  // true for light mode, false for dark mode
-	shouldExit  bool  // flag to indicate if application should exit
+	app        *tview.Application
+	table      *tview.Table
+	statusBar  *tview.TextView
+	helpText   *tview.TextView
+	vms        []VM
+	lastUpdate time.Time
+	showHelp   bool
+	refreshing bool
+	lightMode  bool // true for light mode, false for dark mode
+	shouldExit bool // flag to indicate if application should exit
 }
 
 // NewApp creates a new application instance
 func NewApp() *App {
 	a := &App{
-		app:       tview.NewApplication(),
-		table:     tview.NewTable(),
-		statusBar: tview.NewTextView(),
-		helpText:  tview.NewTextView(),
-		lightMode: true, // Default to light mode for iTerm2
+		app:        tview.NewApplication(),
+		table:      tview.NewTable(),
+		statusBar:  tview.NewTextView(),
+		helpText:   tview.NewTextView(),
+		lightMode:  false, // Default to dark mode
 		shouldExit: false,
 	}
-	
+
 	a.setupUI()
 	a.setupKeybindings()
 	// Load VMs after UI is set up but before app starts
 	a.LoadVMs()
-	
+
 	return a
 }
 
@@ -71,7 +71,7 @@ func (a *App) setupKeybindings() {
 			a.ToggleTheme()
 			return nil
 		}
-		
+
 		switch event.Rune() {
 		case 'q':
 			a.Stop()
@@ -95,7 +95,7 @@ func (a *App) setupKeybindings() {
 			a.connectToSelected()
 			return nil
 		}
-		
+
 		return event
 	})
 }
@@ -128,11 +128,11 @@ func (a *App) LoadVMs() {
 		a.UpdateStatus(fmt.Sprintf("[red]%v", err))
 		return
 	}
-	
+
 	a.vms = vms
 	a.updateTable()
 	a.lastUpdate = time.Now()
-	a.UpdateStatus(fmt.Sprintf("Loaded %d VMs - Last updated: %s", 
+	a.UpdateStatus(fmt.Sprintf("Loaded %d VMs - Last updated: %s",
 		len(a.vms), a.lastUpdate.Format("15:04:05")))
 }
 
@@ -151,18 +151,18 @@ func (a *App) Refresh() {
 		return
 	}
 	a.refreshing = true
-	
+
 	go func() {
 		defer func() {
 			a.refreshing = false
 		}()
-		
+
 		a.app.QueueUpdateDraw(func() {
 			a.UpdateStatus("Refreshing...")
 		})
-		
+
 		time.Sleep(100 * time.Millisecond)
-		
+
 		a.app.QueueUpdateDraw(func() {
 			a.LoadVMs()
 		})

@@ -14,36 +14,36 @@ import (
 func (a *App) setupUI() {
 	// Set the theme first
 	a.applyTheme()
-	
-	// Create table with k9s-style configuration
+
+	// Create a table with k9s-style configuration
 	a.table = tview.NewTable()
 	a.table.SetBorder(false)
 	a.table.SetTitle("  LIMA VM MANAGER  ")
 	a.table.SetTitleAlign(tview.AlignCenter)
-	
+
 	// This is the key setting from k9s: only rows selectable, not individual cells
 	a.table.SetSelectable(true, false)
 	a.table.SetFixed(1, 0)
-	
+
 	// Apply theme-specific table styling
 	a.applyTableTheme()
-	
+
 	// Create status bar
 	a.statusBar = tview.NewTextView()
 	a.statusBar.SetBorder(false)
 	a.statusBar.SetDynamicColors(true)
 	a.statusBar.SetTextAlign(tview.AlignLeft)
-	
+
 	// Create help text
 	a.helpText = tview.NewTextView()
 	a.helpText.SetBorder(false)
 	a.helpText.SetTitle("  HELP  ")
 	a.helpText.SetDynamicColors(true)
 	a.helpText.SetText(getHelpText())
-	
+
 	// Apply theme to all components
 	a.applyComponentTheme()
-	
+
 	// Setup layout
 	a.setupLayout()
 }
@@ -58,7 +58,7 @@ func (a *App) setupLayout() {
 	// Layout
 	flex := tview.NewFlex()
 	flex.SetDirection(tview.FlexRow)
-	
+
 	if a.showHelp {
 		mainFlex := tview.NewFlex()
 		mainFlex.AddItem(a.table, 0, 2, true)
@@ -68,17 +68,17 @@ func (a *App) setupLayout() {
 	} else {
 		flex.AddItem(a.table, 0, 1, true)
 	}
-	
+
 	flex.AddItem(tview.NewBox(), 1, 0, false) // Spacer
 	flex.AddItem(a.statusBar, 1, 0, false)
-	
+
 	a.app.SetRoot(flex, true)
 }
 
 // updateTable updates the table with current VM data
 func (a *App) updateTable() {
 	a.table.Clear()
-	
+
 	// Set headers with theme-aware formatting
 	headers := []string{"Name", "Status", "Port", "Type", "Arch", "CPUs", "Memory", "Disk", "Dir"}
 	for col, header := range headers {
@@ -95,17 +95,17 @@ func (a *App) updateTable() {
 		cell.SetExpansion(1)
 		a.table.SetCell(0, col, cell)
 	}
-	
+
 	// Add VM rows
 	for i, vm := range a.vms {
 		a.addVMRow(i+1, vm)
 	}
-	
+
 	// Select first data row if available
 	if len(a.vms) > 0 {
 		a.table.Select(1, 0)
 	}
-	
+
 	a.applyTableTheme()
 }
 
@@ -117,10 +117,10 @@ func (a *App) addVMRow(row int, vm VM) {
 	if vm.SSHAddress != "" && vm.SSHAddress != "127.0.0.1" {
 		sshAddress = fmt.Sprintf("%s:%d", vm.SSHAddress, vm.SSHLocalPort)
 	}
-	
+
 	memoryGB := float64(vm.Memory) / (1024 * 1024 * 1024)
 	diskGB := float64(vm.Disk) / (1024 * 1024 * 1024)
-	
+
 	dirPath := vm.Dir
 	if strings.HasPrefix(dirPath, "/Users/") {
 		homeDir, _ := os.UserHomeDir()
@@ -128,7 +128,7 @@ func (a *App) addVMRow(row int, vm VM) {
 			dirPath = strings.Replace(dirPath, homeDir, "~", 1)
 		}
 	}
-	
+
 	// Create cells
 	cells := []string{
 		vm.Name,
@@ -141,11 +141,11 @@ func (a *App) addVMRow(row int, vm VM) {
 		fmt.Sprintf("%.0fG", diskGB),
 		dirPath,
 	}
-	
+
 	for col, content := range cells {
 		cell := tview.NewTableCell(content)
 		cell.SetExpansion(1)
-		
+
 		// Color code status
 		if col == 1 { // Status column
 			switch vm.Status {
@@ -170,7 +170,7 @@ func (a *App) addVMRow(row int, vm VM) {
 				cell.SetTextColor(tcell.ColorWhite)
 			}
 		}
-		
+
 		a.table.SetCell(row, col, cell)
 	}
 }

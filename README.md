@@ -2,7 +2,8 @@
 
 A modern Terminal User Interface for managing Lima VMs, inspired by k9s.
 
-Essentially a TUI created in Go with the tview framework. The idea was to improve the built in `limactl list` command with features such as:
+Essentially a TUI created in Go with the tview framework. The idea was to improve the built in `limactl list` command 
+with features such as:
 
 - Real-time VM overview
 - Intuitive controls for navigation
@@ -12,22 +13,22 @@ Essentially a TUI created in Go with the tview framework. The idea was to improv
 ## Installation
 
 ### Prerequisites
-- Go 1.21+ installed
+- Go 1.26+ installed
 - Lima installed and working
 - Access to `limactl` command
 
 ### Build from source
-```bash
-make deps     # Install dependencies
-make build    # Build the binary
-make install  # Install to /usr/local/bin (optional)
+```go
+go get .      # Install dependencies
+go build .    # Build the binary
+go install .  # Install to your $GOBIN path
 ```
 
 ## Usage
 
-```bash
+```go
 # Run the TUI
-./lima-tui
+go run .
 
 # Or if installed globally
 lima-tui
@@ -55,6 +56,8 @@ lima-tui
 
 ## Interface
 
+The default theme is the dark theme.
+
 ### Light 
 
 ![Light Interface](interface-light.png)
@@ -81,7 +84,7 @@ lima-tui/
 ```
 
 ### Dependencies
-- [tview](https://github.com/rivo/tview) - Rich TUI framework
+- [tview](https://github.com/rivo/tview) – Rich TUI framework
 - [tcell](https://github.com/gdamore/tcell) - Terminal cell-based display
 
 ## Troubleshooting
@@ -92,10 +95,6 @@ lima-tui/
 - Verify VM permissions
 
 ### Build issues
-- Ensure Go 1.21+ is installed: `go version`
+- Ensure Go 1.26+ is installed: `go version`
 - Run `go mod tidy` to fix dependencies
 - Check network access for Go modules
-
-### Performance issues
-- Reduce refresh interval in code if needed
-- Check system resources with many VMs
