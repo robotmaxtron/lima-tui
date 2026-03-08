@@ -32,7 +32,7 @@ func (a *App) applyTheme() {
 		tview.Styles.TertiaryTextColor = tcell.ColorGray
 		tview.Styles.InverseTextColor = tcell.ColorBlack
 	}
-	
+
 	a.applyTableTheme()
 	a.applyComponentTheme()
 }
@@ -86,34 +86,4 @@ func (a *App) ToggleTheme() {
 	a.lightMode = !a.lightMode
 	a.applyTheme()
 	a.updateTable() // Refresh table to apply new colors
-}
-
-// Theme color helpers
-func (a *App) getTextColor() tcell.Color {
-	if a.lightMode {
-		return tcell.ColorBlack
-	}
-	return tcell.ColorWhite
-}
-
-func (a *App) getHeaderColor() tcell.Color {
-	if a.lightMode {
-		return tcell.ColorDarkBlue
-	}
-	return tcell.ColorAqua
-}
-
-func (a *App) getStatusColor(status string) tcell.Color {
-	switch status {
-	case "Running":
-		return tcell.ColorGreen
-	case "Stopped":
-		return tcell.ColorRed
-	case "Starting":
-		return tcell.ColorYellow
-	case "Stopping":
-		return tcell.ColorOrange
-	default:
-		return tcell.ColorGray
-	}
 }

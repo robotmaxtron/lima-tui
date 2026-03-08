@@ -18,19 +18,19 @@ func (a *App) connectToSelected() {
 		a.UpdateStatus("[red]No VM selected")
 		return
 	}
-	
+
 	if vm.Status != "Running" {
 		a.UpdateStatus(fmt.Sprintf("VM '%s' is not running (status: %s)", vm.Name, vm.Status))
 		return
 	}
-	
+
 	a.UpdateStatus(fmt.Sprintf("Connecting to VM '%s'...", vm.Name))
 	a.app.Suspend(func() {
 		cmd := exec.Command("limactl", "shell", vm.Name)
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
-		
+
 		if err := cmd.Run(); err != nil {
 			fmt.Printf("Error connecting to VM: %v\n", err)
 			fmt.Println("Press Enter to continue...")
@@ -46,10 +46,10 @@ func (a *App) toggleVMState() {
 		a.UpdateStatus("[red]No VM selected")
 		return
 	}
-	
+
 	var action string
 	var cmd *exec.Cmd
-	
+
 	switch vm.Status {
 	case "Running":
 		action = "Stopping"
@@ -61,9 +61,9 @@ func (a *App) toggleVMState() {
 		a.UpdateStatus(fmt.Sprintf("Cannot toggle VM '%s' in state '%s'", vm.Name, vm.Status))
 		return
 	}
-	
+
 	a.UpdateStatus(fmt.Sprintf("%s VM '%s'...", action, vm.Name))
-	
+
 	go func() {
 		err := cmd.Run()
 		a.app.QueueUpdateDraw(func() {
@@ -86,14 +86,14 @@ func (a *App) restartSelected() {
 		a.UpdateStatus("[red]No VM selected")
 		return
 	}
-	
+
 	if vm.Status != "Running" {
 		a.UpdateStatus(fmt.Sprintf("VM '%s' is not running (status: %s)", vm.Name, vm.Status))
 		return
 	}
-	
+
 	a.UpdateStatus(fmt.Sprintf("Restarting VM '%s'...", vm.Name))
-	
+
 	go func() {
 		// Stop first
 		stopCmd := exec.Command("limactl", "stop", vm.Name)
@@ -103,10 +103,10 @@ func (a *App) restartSelected() {
 			})
 			return
 		}
-		
+
 		// Wait a bit
 		time.Sleep(2 * time.Second)
-		
+
 		// Start again
 		startCmd := exec.Command("limactl", "start", vm.Name)
 		err := startCmd.Run()
@@ -130,7 +130,7 @@ func (a *App) deleteSelected() {
 		a.UpdateStatus("[red]No VM selected")
 		return
 	}
-	
+
 	// Show confirmation dialog
 	modal := tview.NewModal().
 		SetText(fmt.Sprintf("Are you sure you want to delete VM '%s'?\n\nThis action cannot be undone.", vm.Name)).
@@ -142,7 +142,7 @@ func (a *App) deleteSelected() {
 				a.performDelete(vm)
 			}
 		})
-	
+
 	// Apply theme to modal
 	if a.lightMode {
 		modal.SetBackgroundColor(tcell.ColorWhite)
@@ -155,7 +155,7 @@ func (a *App) deleteSelected() {
 		modal.SetButtonBackgroundColor(tcell.ColorDarkBlue)
 		modal.SetButtonTextColor(tcell.ColorWhite)
 	}
-	
+
 	// Show the modal
 	a.app.SetRoot(modal, true)
 }
@@ -163,7 +163,7 @@ func (a *App) deleteSelected() {
 // performDelete actually deletes the VM
 func (a *App) performDelete(vm *VM) {
 	a.UpdateStatus(fmt.Sprintf("Deleting VM '%s'...", vm.Name))
-	
+
 	go func() {
 		cmd := exec.Command("limactl", "delete", vm.Name)
 		err := cmd.Run()
